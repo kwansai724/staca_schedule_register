@@ -205,13 +205,13 @@ async function registerGroup(
       const confirmButton = page.getByRole("button", { name: "確定" });
       await confirmButton.waitFor({ timeout: 15000 });
       await humanDelay(2000, 3000);
-      await confirmButton.click();
+      await confirmButton.click({ timeout: 60000 });
 
       // 完了ページ確認
       log("完了ページへの遷移を待機...");
       const successLink = page.getByRole("link", { name: "集客する" })
         .or(page.getByRole("link", { name: "日程追加" }));
-      await successLink.first().waitFor({ timeout: 20000 });
+      await successLink.first().waitFor({ timeout: 60000 });
 
       log(`バッチ ${chunkIdx + 1} 完了`);
 

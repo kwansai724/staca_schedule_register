@@ -182,10 +182,12 @@ async function registerGroup(
         }
 
         await block.locator('select[name*="[session_startdate_year]"]').selectOption(String(y));
-        await humanDelay(100, 300);
+        await humanDelay(500, 1000);
         await block.locator('select[name*="[session_startdate_month]"]').selectOption(String(m));
-        await humanDelay(100, 300);
-        await block.locator('select[name*="[session_startdate_day]"]').selectOption(String(d));
+        // 月変更後、日の選択肢が動的に再生成されるのを待つ
+        const daySelect = block.locator('select[name*="[session_startdate_day]"]');
+        await daySelect.locator(`option[value="${d}"]`).waitFor({ timeout: 10000 });
+        await daySelect.selectOption(String(d));
         await humanDelay(100, 300);
         await block.locator("select.js_start_time_hour").selectOption(String(startHour));
         await humanDelay(100, 300);

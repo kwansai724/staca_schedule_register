@@ -35,6 +35,17 @@ jobs:
         env:
           SECRET: ${{ secrets.STORICA_SESSION }}
 
+      - name: Mask sensitive data in payload
+        run: |
+          echo "$PAYLOAD" | jq -r '.schedules[].emergencyContact // empty' | while IFS= read -r v; do
+            [ -n "$v" ] && echo "::add-mask::$v"
+          done
+          echo "$PAYLOAD" | jq -r '.schedules[].teacherName // empty' | while IFS= read -r v; do
+            [ -n "$v" ] && echo "::add-mask::$v"
+          done
+        env:
+          PAYLOAD: ${{ toJson(github.event.client_payload) }}
+
       - name: Run registration
         env:
           PAYLOAD: ${{ toJson(github.event.client_payload) }}

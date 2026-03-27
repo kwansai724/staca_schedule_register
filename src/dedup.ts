@@ -41,8 +41,9 @@ async function fetchTeacherEvents(teacherId: string): Promise<StoacaEvent[]> {
  * スケジュールからISO8601のstart_atを生成する
  */
 function toStartAt(schedule: Schedule): string {
+  const dateStr = String(schedule.date).split("T")[0]; // ISO8601対応
   const startTime = schedule.time.split("~")[0]; // HH:mm
-  return `${schedule.date}T${startTime}:00+09:00`;
+  return `${dateStr}T${startTime}:00+09:00`;
 }
 
 /**

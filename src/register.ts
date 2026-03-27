@@ -167,7 +167,9 @@ async function registerGroup(
       for (let i = 0; i < chunk.length; i++) {
         const s = chunk[i];
         const [startTime, endTime] = s.time.split("~");
-        const [y, m, d] = s.date.split("-").map(Number);
+        // 日付が ISO8601 ("2026-03-30T00:00:00.000Z") で来る場合に対応
+        const dateStr = String(s.date).split("T")[0];
+        const [y, m, d] = dateStr.split("-").map(Number);
         const [startHour, startMin] = startTime.split(":").map(Number);
         const [endHour, endMin] = endTime.split(":").map(Number);
 

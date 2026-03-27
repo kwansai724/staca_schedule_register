@@ -26,11 +26,14 @@ jobs:
       - run: npx playwright install chromium --with-deps
 
       - name: Mask secrets
-        run: |
-          echo "::add-mask::${{ secrets.STORICA_SESSION }}"
+        run: echo "::add-mask::$SECRET"
+        env:
+          SECRET: ${{ secrets.STORICA_SESSION }}
 
       - name: Restore session
-        run: echo '${{ secrets.STORICA_SESSION }}' > session.json
+        run: echo "$SECRET" > session.json
+        env:
+          SECRET: ${{ secrets.STORICA_SESSION }}
 
       - name: Run registration
         env:

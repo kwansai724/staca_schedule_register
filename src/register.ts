@@ -174,9 +174,7 @@ async function registerGroup(
       await page.locator("#session_detail_multi_form_session_capacity").fill(String(key.capacity));
       await page.locator("#session_detail_multi_form_cost").fill(String(key.price));
       await page.locator("#session_detail_multi_form_emergency_contact").fill(key.emergencyContact);
-      const ec = key.emergencyContact;
-      const maskedContact = ec.slice(0, -4).replace(/\d/g, "*") + ec.slice(-4);
-      log(`定員=${key.capacity}, 受講料=${key.price}円, 連絡先=${maskedContact}`);
+      log(`定員=${key.capacity}, 受講料=${key.price}円, 連絡先=***-****-****`);
 
       // 締め切り日時
       await setDeadline(page, key.deadline);

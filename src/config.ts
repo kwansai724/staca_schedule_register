@@ -3,6 +3,7 @@ export interface Schedule {
   teacherName: string;
   courseName: string;
   classId: string;
+  teacherId?: string;  // 講師ID（重複チェック用）
   date: string;       // yyyy-MM-dd
   time: string;        // HH:mm~HH:mm
   capacity: number;

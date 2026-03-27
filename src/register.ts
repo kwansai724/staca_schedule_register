@@ -7,6 +7,22 @@ const BASE_URL = "https://www.street-academy.com";
 const MAX_SCHEDULES_PER_BATCH = 30;
 const MAX_403_RETRIES = 3;
 
+/**
+ * 日付文字列をパースする（ISO8601のUTCタイムゾーンずれに対応）
+ * "2026-03-30" → そのまま / "2026-03-29T15:00:00.000Z" → JST変換で2026-03-30
+ */
+function parseDate(raw: string): { y: number; m: number; d: number } {
+  const str = String(raw);
+  if (str.includes("T")) {
+    const dt = new Date(str);
+    // JSTに変換
+    const jst = new Date(dt.getTime() + 9 * 60 * 60 * 1000);
+    return { y: jst.getUTCFullYear(), m: jst.getUTCMonth() + 1, d: jst.getUTCDate() };
+  }
+  const [y, m, d] = str.split("-").map(Number);
+  return { y, m, d };
+}
+
 interface GroupKey {
   classId: string;
   capacity: number;
@@ -158,7 +174,9 @@ async function registerGroup(
       await page.locator("#session_detail_multi_form_session_capacity").fill(String(key.capacity));
       await page.locator("#session_detail_multi_form_cost").fill(String(key.price));
       await page.locator("#session_detail_multi_form_emergency_contact").fill(key.emergencyContact);
-      log(`定員=${key.capacity}, 受講料=${key.price}円, 連絡先=${key.emergencyContact}`);
+      const ec = key.emergencyContact;
+      const maskedContact = ec.slice(0, -4).replace(/\d/g, "*") + ec.slice(-4);
+      log(`定員=${key.capacity}, 受講料=${key.price}円, 連絡先=${maskedContact}`);
 
       // 締め切り日時
       await setDeadline(page, key.deadline);
@@ -167,9 +185,7 @@ async function registerGroup(
       for (let i = 0; i < chunk.length; i++) {
         const s = chunk[i];
         const [startTime, endTime] = s.time.split("~");
-        // 日付が ISO8601 ("2026-03-30T00:00:00.000Z") で来る場合に対応
-        const dateStr = String(s.date).split("T")[0];
-        const [y, m, d] = dateStr.split("-").map(Number);
+        const { y, m, d } = parseDate(s.date);
         const [startHour, startMin] = startTime.split(":").map(Number);
         const [endHour, endMin] = endTime.split(":").map(Number);
 

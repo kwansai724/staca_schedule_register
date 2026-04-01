@@ -126,7 +126,7 @@ async function registerGroup(
 
     try {
       const url = `${BASE_URL}/session_details/new_multi_session?classdetailid=${key.classId}`;
-      await page.goto(url);
+      await page.goto(url, { waitUntil: "domcontentloaded" });
       await humanDelay(2000, 3000);
 
       // 403チェック
